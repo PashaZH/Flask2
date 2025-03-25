@@ -1,5 +1,5 @@
 import sys
-from flask import Flask, render_template
+from flask import Flask, render_template, abort
 from faker import Faker
 
 
@@ -19,6 +19,21 @@ def create_files() -> None:  # zapolnenie files
         for _ in range(10):
             print(*fake.simple_profile().values(), sep=';', file=users_f)
 
+def load_users():
+    users = []
+    with open("./files/users.txt", encoding="utf-8") as f:
+        for line in f:
+            login, full_name, gender, address, email, birth_date = line.strip().split(';')
+            users.append({
+                'login': login,
+                'full_name': full_name,
+                'gender': gender,
+                'address': address,
+                'email': email,
+                'birth_date': birth_date
+            })
+    return users
+
 
 @app.route("/")
 
@@ -31,7 +46,79 @@ def get_names():
     with open("./files/names.txt", encoding="utf-8") as f:
         for raw_line in f:
             names.append(raw_line.strip())
-        return "<br>".join(names)
+        #return "<br>".join(names)
+    return render_template("names.html", people_names=names, check=555)
+
+@app.route("/table")
+def table():
+    entities = []
+    with open("./files/humans.txt", encoding="utf-8") as f:
+        for raw_line in f:
+            data = raw_line.strip().split(',')
+            
+            if len(data) == 3:
+                # Generate login based on name format
+                login = f"{data[1].lower()}_{data[0].lower()}"
+                
+                entities.append({
+                    'login': login,
+                    'last_name': data[0],
+                    'name': data[1],
+                    'surname': data[2],
+                    'birth_date': fake.date_of_birth(minimum_age=18, maximum_age=80).strftime('%Y-%m-%d'),
+                    'phone': fake.phone_number()
+                })
+    
+    return render_template("table.html", entities=entities, check=555)
+
+
+
+@app.route("/users")
+def users_list():
+    entities = []
+    with open("./files/users.txt", encoding="utf-8") as f:
+        for raw_line in f:
+            data = raw_line.strip().split(';')
+            
+            
+            if len(data) >= 6:
+                entities.append({
+                    'login': data[0],
+                    'name': data[1],
+                    'gender': data[2],
+                    'address': data[3],
+                    'email': data[4],
+                    'birth_date': data[5]
+                })
+    
+    return render_template("users_list.html", users=entities, check=555)
+
+
+@app.route("/user/<login>")
+def user_profile(login):
+    users = load_users()
+    user = next((user for user in users if user['login'] == login), None)
+    if user:
+        return render_template("user_item.html", user=user)
+    return "Пользователь не найден", 404
+
+@app.route('/users/<username>')
+def show_user_profile(username):
+    users = load_users()
+    user = next((user for user in users if user['login'] == username), None)
+    if user:
+        return render_template("user_item.html", user=user)
+    return "Пользователь не найден", 404
+
+@app.route('/posts/<int:post_id>')
+def show_post(post_id):
+# показывает статью по её id (int)
+    return f'Post {post_id}'
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
 
 if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == "--files":

@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block title %}Список пользователей{% endblock %}
+
+{% block content %}
+    <h2>Список пользователей</h2>
+    <table border="1">
+        <tr>
+            <th>№</th>
+            <th>Логин</th>
+            <th>Имя</th>
+            <th>Пол</th>
+            <th>Адрес</th>
+            <th>Email</th>
+            <th>Дата рождения</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ loop.index }}</td>
+            <td>{{ user.login }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.gender }}</td>
+            <td>{{ user.address }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.birth_date }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    
+    <h3>Output: {{ check }} value</h3>
+{% endblock %}

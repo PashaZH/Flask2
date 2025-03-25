@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+    <h2>Профиль пользователя</h2>
+    {% if user %}
+    <table border="1">
+        <tr>
+            <th>Логин</th>
+            <td>{{ user.login }}</td>
+        </tr>
+        <tr>
+            <th>Полное имя</th>
+            <td>{{ user.full_name }}</td>
+        </tr>
+        <tr>
+            <th>Пол</th>
+            <td>{{ user.gender }}</td>
+        </tr>
+        <tr>
+            <th>Адрес</th>
+            <td>{{ user.address }}</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>{{ user.email }}</td>
+        </tr>
+        <tr>
+            <th>Дата рождения</th>
+            <td>{{ user.birth_date }}</td>
+        </tr>
+    </table>
+    {% else %}
+    <p>Пользователь не найден</p>
+    {% endif %}
+{% endblock %}
