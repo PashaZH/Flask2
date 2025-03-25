@@ -6,7 +6,7 @@ from faker import Faker
 app = Flask(__name__)
 fake = Faker("ru_RU")
 
-def create_files() -> None:  # zapolnenie files
+def create_files() -> None:  # zapolnenie failov
     with open("./files/humans.txt", 'w', encoding="utf-8") as humans_f:
         for _ in range(10):
             print(*fake.name().split(), sep=',', file=humans_f)
@@ -34,9 +34,7 @@ def load_users():
             })
     return users
 
-
 @app.route("/")
-
 def hello():
     return render_template("index.html")
 
@@ -46,19 +44,22 @@ def get_names():
     with open("./files/names.txt", encoding="utf-8") as f:
         for raw_line in f:
             names.append(raw_line.strip())
-        #return "<br>".join(names)
+        
     return render_template("names.html", people_names=names, check=555)
 
 @app.route("/table")
 def table():
+    
+    users = load_users()
     entities = []
+    
     with open("./files/humans.txt", encoding="utf-8") as f:
-        for raw_line in f:
+        for i, raw_line in enumerate(f):
             data = raw_line.strip().split(',')
             
             if len(data) == 3:
-                # Generate login based on name format
-                login = f"{data[1].lower()}_{data[0].lower()}"
+                
+                login = users[i]['login'] if i < len(users) else f"{data[1].lower()}_{data[0].lower()}"
                 
                 entities.append({
                     'login': login,
@@ -70,8 +71,6 @@ def table():
                 })
     
     return render_template("table.html", entities=entities, check=555)
-
-
 
 @app.route("/users")
 def users_list():
@@ -93,8 +92,7 @@ def users_list():
     
     return render_template("users_list.html", users=entities, check=555)
 
-
-@app.route("/user/<login>")
+@app.route("/users/<login>")
 def user_profile(login):
     users = load_users()
     user = next((user for user in users if user['login'] == login), None)
@@ -102,17 +100,8 @@ def user_profile(login):
         return render_template("user_item.html", user=user)
     return "Пользователь не найден", 404
 
-@app.route('/users/<username>')
-def show_user_profile(username):
-    users = load_users()
-    user = next((user for user in users if user['login'] == username), None)
-    if user:
-        return render_template("user_item.html", user=user)
-    return "Пользователь не найден", 404
-
 @app.route('/posts/<int:post_id>')
 def show_post(post_id):
-# показывает статью по её id (int)
     return f'Post {post_id}'
 
 @app.errorhandler(404)
@@ -124,5 +113,3 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == "--files":
         create_files()
     app.run(debug=True)
-
-
