@@ -1,10 +1,10 @@
 from typing import Any
 from flask import Flask, jsonify, request, abort
 from http import HTTPStatus
-#from pathlib import Path
+from pathlib import Path
 from werkzeug.exceptions import HTTPException
 # imports for sqlalchemy
-#from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 from sqlalchemy import String, func, ForeignKey
 from sqlalchemy.exc import InvalidRequestError
@@ -15,12 +15,12 @@ class Base(DeclarativeBase):
     pass
 
 
-#BASE_DIR = Path(__file__).parent
+BASE_DIR = Path(__file__).parent
 
 app = Flask(__name__)
-#app.config['JSON_AS_ASCII'] = False
-#app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{BASE_DIR / 'quotes.db'}"
-#app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+# app.config['JSON_AS_ASCII'] = False
+# app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{BASE_DIR / 'quotes.db'}"
+# app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
@@ -94,14 +94,14 @@ def get_author_quotes(author_id):
     
     return jsonify(author=author.to_dict() | {"quotes": quotes}), 200
 
-
+#cloned
 @app.route("/quotes/<int:quote_id>")
 def get_quote(quote_id: int) -> dict:
     """ Функция возвращает цитату по значению ключа id=quote_id."""
     quote = db.get_or_404(quote_id)
     return jsonify(quote.to_dict()), HTTPStatus.OK
 
-
+#cloned
 @app.get("/quotes/count")
 def quotes_count():
     """Function to count all quotes."""
@@ -109,7 +109,7 @@ def quotes_count():
     return jsonify(count=count), 200
 
 
-
+# cloned
 @app.route("/quotes", methods=['POST'])
 def create_quote():
     data = request.json
@@ -134,7 +134,7 @@ def create_quote():
 
     return quote.to_dict(), HTTPStatus.CREATED
 
-
+# cloned
 @app.route("/quotes/<int:quote_id>", methods=["PUT"])
 def edit_quote(quote_id):
     quote: QuoteModel = db.get_or_404(QuoteModel, quote_id)
@@ -155,7 +155,7 @@ def edit_quote(quote_id):
     except Exception as e:
         return str(e), HTTPStatus.BAD_REQUEST
 
-
+#cloned
 @app.route("/quotes/<int:quote_id>", methods=["DELETE"])
 def delete_quote(quote_id: int):
     quote = db.get_or_404(QuoteModel, quote_id)
@@ -167,7 +167,7 @@ def delete_quote(quote_id: int):
         db.session.rollback()
         abort(503, f"Database error: {str(e)}")
 
-
+#cloned
 @app.route("/quotes/filter")
 def filter_quotes():
     """DONE: change to work with database."""

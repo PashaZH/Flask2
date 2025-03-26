@@ -8,6 +8,7 @@ from sqlalchemy.exc import InvalidRequestError
 from http import HTTPStatus
 from sqlalchemy import func
 
+
 # URL: /quotes
 @app.route("/quotes")
 def get_quotes() -> list[dict[str, Any]]:
