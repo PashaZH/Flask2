@@ -1,4 +1,4 @@
-from api import app, db, auth
+from api import app, db, multi_auth
 from api.models.author import AuthorModel
 from flask import abort, jsonify, request
 from http import HTTPStatus
@@ -14,9 +14,9 @@ def get_authors():
 
 
 @app.route("/authors", methods=['POST'])
-@auth.login_required
+@multi_auth.login_required
 def create_author():
-    print("user = ", auth.current_user())
+    print("user = ", multi_auth.current_user())
     try:
         author_data = author_schema.loads(request.data)
         author = AuthorModel(**author_data)
@@ -37,9 +37,9 @@ def get_author_by_id(author_id: int):
 
 
 @app.route("/authors/<int:author_id>", methods=["PUT"])
-@auth.login_required
+@multi_auth.login_required
 def edit_author(author_id):
-    print("user = ", auth.current_user())
+    print("user = ", multi_auth.current_user())
     author = db.get_or_404(AuthorModel, author_id)
 
     try:

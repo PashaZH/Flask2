@@ -5,18 +5,21 @@ from api.schemas.user import user_schema, users_schema
 from marshmallow import ValidationError
 
 
+# url: /users/<int:user_id>
 @app.route('/users/<int:user_id>', methods=['GET'])
 def get_user_by_id(user_id: int):
     user = db.get_or_404(UserModel, user_id, description=f'User with id={user_id} not found')
     return jsonify(user_schema.dump(user)), 200
 
 
+# url: /users
 @app.route('/users', methods=['GET'])
 def get_users():
     users_db = db.session.scalars(db.select(UserModel)).all()
     return jsonify(users_schema.dump(users_db)), 200
 
 
+# url: /users
 @app.route('/users', methods=['POST'])
 def create_user():
     try:
@@ -29,3 +32,4 @@ def create_user():
         db.session.rollback()
         abort(503, f'Database error: {str(e)}')
     return jsonify(user_schema.dump(user)), 201
+

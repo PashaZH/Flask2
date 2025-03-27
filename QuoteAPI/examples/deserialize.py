@@ -15,6 +15,9 @@ json_data_as_dict = json.loads(json_data)
 result = schema.load(json_data_as_dict)
 print(result)
 
+## эквивалентная запись
+# result = schema.loads(json_data)
+# print(result)
 
 json_data_list = """
 [
@@ -35,9 +38,9 @@ json_data_list = """
    }
 ]
 """
-#json () many=True
-# var1 -экземпляр
-# var2 - loads
+# чтобы обрабатывать json со списком нужно указывать параментр many=True либо,
+# var1 - при создании экземпляра
+# var2 - при вызове метода loads
 
 #var1
 authors_schema = AuthorSchema(many=True)

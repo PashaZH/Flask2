@@ -9,6 +9,8 @@ class AuthorModel(db.Model):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[int] = mapped_column(String(32), index=True, unique=True)
+    #default -> for new instance
+    #server_default -> for instances that already exist in table
     lastname: Mapped[str] = mapped_column(String(32), index=True, default='unknown', server_default="Smirnov", nullable=True)
     quotes: Mapped[list['QuoteModel']]= relationship(
         lambda: QuoteModel, back_populates='author',

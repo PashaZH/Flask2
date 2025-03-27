@@ -1,12 +1,13 @@
 from pathlib import Path
 
 
-
 BASE_DIR = Path(__file__).parent
 
+
 class Config:
+    SECRET_KEY = 'supeR secret KeyS'
     JSON_AS_ASCII = False
     SQLALCHEMY_DATABASE_URI = f"sqlite:///{BASE_DIR / 'quotes.db'}"
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    # Lkz dsdjlf cjlth;bvjuj sql pfghjcjd
-    SQLALCHEMY_ECHO = True
+    ##для вывода SQL-запросов
+    #SQLALCHEMY_ECHO = True
