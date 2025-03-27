@@ -1,6 +1,7 @@
+from flask import request
 from api import ma
 from api.models.user import UserModel
-from marshmallow import validate, fields
+from marshmallow import post_load, validate, fields
 
 
 class UserSchema(ma.SQLAlchemyAutoSchema):
@@ -11,6 +12,12 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     username = ma.auto_field(required=True, validate=validate.Length(min=4))
     password = fields.Str(required=True, validate=validate.Length(min=5, max=15))
 
+    #Декоратор после загрузки данных:
+    @post_load
+    def make_user(self, data, **kwargd):
+        if request.method == "POST":
+            return UserModel(**data)
+        return data
 
 user_schema = UserSchema()
 users_schema = UserSchema(many=True)
