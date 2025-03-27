@@ -1,20 +1,38 @@
-from api import app
-from flask import jsonify
-from werkzeug.exceptions import HTTPException
+from flask import Flask, g
+from flask_migrate import Migrate
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.orm import DeclarativeBase
+from flask_marshmallow import Marshmallow
+from flask_httpauth import HTTPBasicAuth
+from api.handlers import author
+from api.handlers import quote
+from api.handlers import user
+
+class Base(DeclarativeBase):
+    pass
 
 
-def validate(in_data: dict, method='post') -> dict:
-    """ function for validation of incoming json """
-    rating = in_data.setdefault('rating', 1)
-    if rating not in range(1,6) and method == 'post':
-        in_data['rating'] = 1
-    elif rating not in range(1,6) and method == 'put':
-        in_data.pop('rating')
-    in_data.setdefault('text', "Quote's text")
-    return in_data
+app = Flask(__name__)
+app.config.from_object("config.Config")
+
+db = SQLAlchemy(model_class=Base)
+db.init_app(app)
 
 
-@app.errorhandler(HTTPException)
-def handle_exeption(e):
-    """Функция для перехвата HTTP ошибок и возврата в виде JSON."""
-    return jsonify({"message": str(e)}), e.code
+migrate = Migrate(app, db)
+ma = Marshmallow(app)
+ma.init_app(app)
+auth = HTTPBasicAuth()
+
+
+@auth.verify_password
+def verify_password(username, password):
+    from api.models.user import UserModel
+    user = db.one_or_404(db.select(UserModel).filter_by(username=username))
+    if not user or not user.verify_password(password):
+        return False
+   
+    g.user = user
+    return True
+
+

@@ -1,5 +1,5 @@
 from marshmallow import ValidationError
-from api import db, app
+from api import db, app, auth
 from api.models.quote import QuoteModel
 from api.models.author import AuthorModel
 from typing import Any
@@ -28,8 +28,6 @@ def get_author_quotes(author_id):
         quotes.append(quote)
     
     return jsonify(quotes_schema.dump(quotes)), 200
-    #еще один вариант выдачи (автор вверху, цитаты списком внизу):
-    #return jsonify(author_schema.dump(author) | {"quotes": quotes_schema.dump(quotes)}), 200
     
 
 
@@ -41,7 +39,9 @@ def get_quote(quote_id: int) -> dict:
 
 
 @app.route("/authors/<int:author_id>/quotes", methods=['POST'])
+@auth.login_required
 def create_quote(author_id):
+    print("user = ", auth.current_user())
     try:
         data = quote_schema.loads(request.data)
     except ValidationError as ve:
